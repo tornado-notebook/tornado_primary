@@ -1,0 +1,245 @@
+**前言**
+```html
+在Python语言中，网络编程的主要模块就是socket模块，在这个模块中可以找到socket()函数，
+该函数用于创建套接字对象。套接字也有自己的方法集，这些方法可以实现基于套接字的网络通信。
+```
+
+**创建套接字的方法***
+```html
+方法名称                                                     功能描述
+socket.socket()                                             :返回套接字对象，通信端点
+```
+
+**服务器套接字方法**
+```html
+方法名称                                                     功能描述
+s.bind()                                                    :将地址（主机名、端口号对）绑定到套接字上
+s.listen()                                                  :设置并启动TCP监听器
+s.accept()                                                  :被动接受TCP客户端连接，一直等待直到连接到达（阻塞）
+```
+
+**客户端套接字方法**
+```html
+方法名称                                                     功能描述
+s.connect()                                                 :主动发起TCP服务器连接
+s.connect_ex()                                              :connect()的扩展版本，此时会以错误码的形式返回问题，而不是抛出一个异常
+```
+
+**普通的套接字方法**
+```html
+方法名称                                                     功能描述
+s.recv()                                                    :接收TCP 消息
+s.recv_into()①                                              :接收TCP消息到指定的缓冲区
+s.send()                                                    :发送TCP消息
+s.sendall()                                                 :完整地发送TCP消息
+s.recvfrom()                                                :接收UDP消息
+s.recvfrom_into()①                                          :接收UDP消息到指定的缓冲区
+s.sendto()                                                  :发送UDP消息
+s.getpeername()                                             :连接到套接字（TCP）的远程地址
+s.getsockname()                                             :当前套接字的地址
+s.getsockopt()                                              :返回给定套接字选项的值
+s.setsockopt()                                              :设置给定套接字选项的值
+s.shutdown()                                                :关闭连接
+s.close()                                                   :关闭套接字
+s.detach()②                                                 :在未关闭文件描述符的情况下关闭套接字，返回文件描述符
+s.ioctl()③                                                  :控制套接字的模式（仅支持Windows）
+```
+
+**面向阻塞的套接字方法**
+```html
+方法名称                                                     功能描述
+s.setblocking()                                             :设置套接字的阻塞或非阻塞模式
+s.settimeout()④                                             :设置阻塞套接字操作的超时时间
+s.gettimeout()④                                             :获取阻塞套接字操作的超时时间
+```
+
+**面向文件的套接字方法**
+```html
+方法名称                                                     功能描述
+s.fileno()                                                  :套接字的文件描述符
+s.makefile()                                                :创建与套接字关联的文件对象
+```
+
+**套接字的数据属性**
+```html
+方法名称                                                     功能描述
+s.family①                                                   :套接字家族
+s.type①                                                     :套接字类型
+s.proto①                                                    :套接字协议
+```
+```html
+说明：
+① Python 2.5 中新增。
+② Python 3.2 中新增。
+③ Python 2.6 中新增，仅仅支持Windows 平台；POSIX 系统可以使用functl 模块函数。
+④ Python 2.3 中新增。
+```
+
+**套接字常用方法详解**
+①.socket()
+```html
+功能：
+    创建双端通信套接字对象，指定TCP/IP协议，返回套接字对象。
+语法：
+    def socket.socket(self, family: int, type: int, protocol: int, fileno: Optional[int]) -> socket
+参数：
+    - socket_family：socket.AF_INET、socket.AF_INET6、socket.AF_UNIX
+        - socket.AF_INET：IPV4（默认）
+        - socket.AF_INET6：IPV6
+        - socket.AF_UNIX：只能够用于单一的Unix系统进程间通信
+    - socket_type：SOCK_STREAM、SOCK_DGRAM、SOCK_RAW、SOCK_RDM、SOCK_SEQPACKET
+        - socket.SOCK_STREAM：数据流，主要用于TCP面向有连接
+        - socket.SOCK_DGRAM：数据报文，主要用于UDP面向无连接
+        - socket.SOCK_RAW：原始套接字，普通的套接字无法处理ICMP、IGMP等网络报文，而SOCK_RAW可以；
+            其次，SOCK_RAW也可以处理特殊的IPv4报文；此外，利用原始套接字，可以通过IP_HDRINCL套接字选项由用户构造IP头。
+    　　- socket.SOCK_RDM：是一种可靠的UDP形式，即保证交付数据报但不保证顺序。SOCK_RAM用来提供对原始协议的低级访问，
+            在需要执行某些特殊操作时使用，如发送ICMP报文。SOCK_RAM通常仅限于高级用户或管理员运行的程序使用。
+    　　- socket.SOCK_SEQPACKET：可靠的连续数据包服务
+    - protocol
+        - 0（默认）与特定的地址家族相关的协议,如果是0，则系统就会根据地址格式和套接类别,自动选择一个合适的协议。
+    - fileno
+        - None（默认），套接字的文件描述符，一般情况下不需要传参，使用默认值即可。
+
+实例：
+    # 1、创建TCP/IPV4套接字
+    tcp_sock4 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    # 2、创建TCP/IPV6套接字
+    tcp_sock6 = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
+    # 3、创建UDP/IPV4套接字
+    udp_sock4 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    # 4、创建UDP/IPV6套接字
+    udp_sock6 = socket.socket(socket.AF_INET6, socket.SOCK_DGRAM)
+```
+
+②.bind()
+```html
+功能：
+    给套接字对象绑定地址，指定IP地址和端口。
+语法：
+    def bind(self, address: Union[_Address, bytes]) -> None
+参数：
+    - address：绑定地址的格式取决于地址族。在AF_INET下，以元组（host,port）的形式表示地址。
+实例：
+    # 1、绑定本地IP和端口，外部无法访问
+    sock.bind(('127.0.0.1', '8000'))
+    # 2、绑定缺省IP和端口，提供外部访问
+    sock.bind(('0.0.0.0', '8001'))
+```
+
+③.listen()
+```html
+功能：
+    套接字监听传入连接，指定最大监听连接数。
+语法：
+    def listen(self, backlog: int) -> None
+参数：
+    - backlog：开始监听传入连接。backlog指定在拒绝连接之前，可以挂起的最大连接数量。 backlog等于5，表示内核已经接到了连接请求，
+      但服务器还没有调用accept进行处理的连接个数最大为5。这个值不能无限大，因为要在内核中维护连接队列
+实例：
+    # 1、绑定本地IP和端口，外部无法访问
+    sock.bind(('127.0.0.1', '8000'))
+    # 2、绑定缺省IP和端口，提供外部访问
+    sock.bind(('0.0.0.0', '8001'))
+```
+
+④.setblocking()
+```html
+语法：
+    套接字设置是否阻塞，True为阻塞，False为非阻塞。
+语法：
+    def setblocking(self, flag: bool) -> None
+参数：
+    - flag：是否阻塞（默认True），如果设置False，那么accept和recv时一旦无数据，则报错。
+```
+
+⑤.accept()
+```html
+功能：
+    等待客户端连接，返回用来接收和发送数据的新的套接字和客户端地址。
+语法：
+    def accept() -> (socket object, address info)
+参数：空
+实例：
+    # 接收TCP客户的连接（阻塞式）等待连接的到来
+    conn, address = sock.accept()
+```
+
+⑥.connect()
+```html
+功能：
+    向外部套接字发起连接，若连接失败，返回报错。
+语法：
+    def connect(self, address: Union[_Address, bytes]) -> None
+参数：
+    - 连接到address处的套接字。一般，address的格式为元组（hostname,port）,如果连接出错，返回socket.error错误。
+```
+
+⑦.connect_ex()
+```html
+功能：
+    向外部套接字发起连接，若连接失败，返回报错编码，若连接成功，返回0。
+语法：
+    def connect_ex(self, address: Union[_Address, bytes]) -> int
+参数：
+    - 连接到address处的套接字。一般，address的格式为元组（hostname,port），只不过会有返回值，连接成功时返回0 ，连接失败时候返回编码。
+```
+⑧.recv()
+```html
+功能：
+    接收连接中的套接字消息，返回消息数据。
+语法：
+    def recv(self, bufsize: int, flags: int = ...) -> bytes
+参数：
+    - bufsize：bufsize指定最多可以接收的数量。flag提供有关消息的其他信息，通常可以忽略。
+```
+
+⑨.recvfrom()
+```html
+功能：
+    接收连接中的套接字消息，返回消息数据和套接字地址，主要用于UDP协议服务。
+语法：
+    def recvfrom(self, bufsize: int, flags: int = ...) -> Tuple[bytes, _RetAddress]
+参数：
+　　- 与recv()类似，但返回值是（bytes, address）。其中bytes是包含接收数据的字节，address是发送数据的套接字地址。
+```
+
+⑩.send()
+```html
+功能：
+    发送数据到其他套接字，返回发送的字节长度。
+语法：
+    def send(self, data: bytes, flags: int = ...) -> int
+参数：
+　　- 将字节数据发送到连接的套接字。返回值是要发送的字节数量，该数量可能小于字节的字节大小。即：可能未将指定内容全部发送。
+```
+
+⑪.sendall()
+```html
+功能：
+    发送全部数据到其他套接字。
+语法：
+    def sendall(self, data: bytes, flags: int = ...) -> None
+参数：
+　　- 将data中的数据发送到连接的套接字，但在返回之前会尝试发送所有数据。成功返回None，失败则抛出异常。内部通过递归调用send，将所有内容发送出去。
+```
+
+⑫.sendto()
+```html
+功能：
+    发送数据到制定地址的套接字，返回发送的字节长度，主要用于UDP协议服务。
+语法：
+    def sendto(self, data: bytes, address: _Address) -> int
+参数：
+　　- 将数据发送到套接字，address是形式为（ip，port）的元组，指定远程地址。返回值是发送的字节数。该函数主要用于UDP协议。
+```
+
+⑬.settimeout()
+```html
+功能：
+    设置套接字连接超时时间。
+语法：
+    def settimeout(self, value: Optional[float]) -> None
+参数：
+　　- 设置套接字操作的超时期，timeout是一个浮点数，单位是秒。值为None表示没有超时期。一般，超时期应该在刚创建套接字时设置，
+    因为它们可能用于连接的操作（如 client 连接最多等待5s ）
+```
