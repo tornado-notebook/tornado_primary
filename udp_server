@@ -1,0 +1,44 @@
+"""
+UDP面向无连接，服务端工作流程如下：
+<1>.创建通信：sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+<2>.绑定地址：sock.bind(('0.0.0.0', '8000'))
+<3>.读取自客户端数据：recv_data4, (host, port) = sock.recvfrom(1024)--->逻辑处理客户端数据
+<4>.发送给客户端数据：sock.sendto(bytes('from udp ipv4 server......', encoding='utf8'), (host, port))
+注意事项：客户端和服务端任意启动一端不会报错
+"""
+import socket
+
+
+def udp_ipv4_server(host='0.0.0.0', port=9001):
+    """
+    功能：UDP协议IPV4服务器
+    :param host: str
+    :param port: int
+    :return:
+    """
+    sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+    sock.bind((host, port))
+    while True:
+        recv_data4, (host, port) = sock.recvfrom(1024)
+        print(recv_data4.decode('utf8'))
+        sock.sendto(bytes('from udp ipv4 server......', encoding='utf8'), (host, port))
+
+
+def udp_ipv6_server(host='0.0.0.0', port=9002):
+    """
+    功能：UDP协议IPV6服务器
+    :param host: str
+    :param port: int
+    :return:
+    """
+    sock = socket.socket(family=socket.AF_INET6, type=socket.SOCK_DGRAM)
+    sock.bind((host, port))
+    sock.listen(5)
+    while True:
+        recv_data6, (host, port) = sock.recvfrom(1024)
+        print(recv_data6.decode('utf8'))
+        sock.sendto(bytes('from udp ipv6 server......', encoding='utf8'), (host, port))
+
+
+if __name__ == '__main__':
+    udp_ipv4_server()
