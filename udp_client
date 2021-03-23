@@ -1,0 +1,73 @@
+"""
+UDP面向无连接，客户端工作流程如下：
+<1>.创建通信：sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+<2>.连接服务：sock.connect(('192.168.11.110', '8000'))
+<3>.发送给服务端数据：conn.sendall('message')
+<4>.读取自服务端数据：conn.recv(1024)--->逻辑处理服务端数据
+<5>.关闭连接：conn.close()
+注意事项：客户端和服务端任意启动一端不会报错
+"""
+import socket
+
+
+def udp_ipv4_client(dest='127.0.0.1', port=9001):
+    """
+    功能：UDP协议IPV4客户端
+    :param dest: str
+    :param port: int
+    :return:
+    """
+    sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+    sock.connect((dest, port))
+    sock.sendall(bytes('from udp ipv4 client......', encoding='utf8'))
+    recv_data4 = sock.recv(1024)
+    print(recv_data4.decode('utf8'))
+    sock.close()
+
+
+def udp_ipv4_client_test(dest='127.0.0.1', port=9001):
+    """
+    功能：UDP协议IPV4客户端
+    :param dest: str
+    :param port: int
+    :return:
+    """
+    sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+    sock.sendto(bytes('from udp ipv4 client test......', encoding='utf8'), (dest, port))
+    recv_data4, (ip, port) = sock.recvfrom(1024)
+    print(recv_data4.decode('utf8'))
+    sock.close()
+
+
+def udp_ipv6_client(dest='127.0.0.1', port=9002):
+    """
+    功能：UDP协议IPV6客户端
+    :param dest: str
+    :param port: int
+    :return:
+    """
+    sock = socket.socket(family=socket.AF_INET6, type=socket.SOCK_DGRAM)
+    sock.connect((dest, port))
+    sock.sendall(bytes('from udp ipv6 client......', encoding='utf8'))
+    recv_data6 = sock.recv(1024)
+    print(recv_data6.decode('utf8'))
+    sock.close()
+
+
+def udp_ipv6_client_test(dest='127.0.0.1', port=9002):
+    """
+    功能：UDP协议IPV6客户端
+    :param dest: str
+    :param port: int
+    :return:
+    """
+    sock = socket.socket(family=socket.AF_INET6, type=socket.SOCK_DGRAM)
+    sock.sendto(bytes('from udp ipv6 client test......', encoding='utf8'), (dest, port))
+    recv_data6 = sock.recv(1024)
+    print(recv_data6.decode('utf8'))
+    sock.close()
+
+
+if __name__ == '__main__':
+    udp_ipv4_client_test()
+
