@@ -1,0 +1,79 @@
+"""
+TCP面向有连接，客户端工作流程如下：
+<1>.创建通信：sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+<2>.连接服务：sock.connect(('192.168.11.110', '8000'))
+<3>.发送给服务端数据：conn.sendall(bytes('from tcp ipv4 client......', encoding='utf8'))
+<4>.读取自服务端数据：conn.recv(1024)--->逻辑处理服务端数据
+<5>.关闭连接：conn.close()
+注意事项：客户端和服务端必须先启动服务端，否则会报错
+"""
+import socket
+
+
+def tcp_ipv4_client(dest='127.0.0.1', port=8001):
+    """
+    功能：TCP协议IPV4客户端
+    :param dest: str
+    :param port: int
+    :return:
+    """
+    sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
+    sock.connect((dest, port))
+    sock.sendall(bytes('from tcp ipv4 client......', encoding='utf8'))
+    recv_data4 = sock.recv(1024)
+    print(recv_data4.decode('utf8'))
+    sock.close()
+
+
+def tcp_ipv4_client_test(dest='127.0.0.1', port=8002):
+    """
+    功能：TCP协议IPV4客户端
+    :param dest: str
+    :param port: int
+    :return:
+    """
+    sock = socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
+    sock.connect((dest, port))
+    # send():发送的数据可能小于实际要发送的字节长度
+    data_len = sock.send(bytes('from tcp ipv4 client test......', encoding='utf8'))
+    print(data_len)
+    recv_data4, (ip, port) = sock.recvfrom(1024)
+    print(recv_data4.decode('utf8'))
+    sock.close()
+
+
+def tcp_ipv6_client(dest='127.0.0.1', port=8001):
+    """
+    功能：TCP协议IPV6客户端
+    :param dest: str
+    :param port: int
+    :return:
+    """
+    sock = socket.socket(family=socket.AF_INET6, type=socket.SOCK_STREAM)
+    sock.connect((dest, port))
+    sock.sendall(b'from tcp ipv6 client......')
+    recv_data6 = sock.recv(1024)
+    print(recv_data6.decode('utf8'))
+    sock.close()
+
+
+def tcp_ipv6_client_test(dest='127.0.0.1', port=8002):
+    """
+    功能：TCP协议IPV6客户端
+    :param dest: str
+    :param port: int
+    :return:
+    """
+    sock = socket.socket(family=socket.AF_INET6, type=socket.SOCK_STREAM)
+    sock.connect((dest, port))
+    # send():发送的数据可能小于实际要发送的字节长度
+    data_len = sock.send(bytes('from tcp ipv6 client test......', encoding='utf8'))
+    print(data_len)
+    recv_data6, (ip, port) = sock.recvfrom(1024)
+    print(recv_data6.decode('utf8'))
+    sock.close()
+
+
+if __name__ == '__main__':
+    # tcp_ipv4_client()
+    tcp_ipv4_client_test()
